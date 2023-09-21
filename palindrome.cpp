@@ -24,20 +24,28 @@ WARNING - do not backspace when entering inputs, as these backspaces will be
 read by the computer as part of the input. 
 */
 
+
+//INCLUDING: 
 #include <iostream>
-#include <cstring>
+#include <cstring> //always use "cstrings" not strings!
 
 using namespace std;
 
+//MAIN FUNCTION (asks for input and prints out if it is palindrome or not):
 int main(){
-  char input[81];
-  char clean[81];
-  int j = 0;
 
+  //Variables: 
+  char input[81]; //this will contain the whole input
+  char clean[81]; // this will only contain the alphanumeric characters
+  int j = 0; //this will measure the number of alphanumeric characters
+
+  //Get input: 
   cin.get(input, 80);
   cin.get();
 
-  for (int i = 0; i < strlen(input); i++) {
+  //Keep only alphanumeric characters for cleaned cstring: 
+  for (int i = 0; i < strlen(input); i++) { //for all characters in input
+    
       if ((int)input[i] >= 97 && (int)input[i] <= 122) {
 	clean[j] = input[i];
 	j++;
@@ -52,6 +60,7 @@ int main(){
 	clean[j] = (char)((int)input[i] + 32);
 	j++;
       }
+      
       else {
 	cout << "exclude: " << input[i];
       }
