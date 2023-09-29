@@ -4,7 +4,7 @@ using namespace std;
 
 void printBoard(char board[3][3]); //change the board
 void clearBoard(char board[3][3]);
-void updateBoard(char board[3][3], int a, int b, int &turn);
+void updateBoard(char board[3][3], int a, int b, int &turn, bool repeat);
 
 void playerTurn(char board[3][3], int &turn, int &p1wins, int &p2wins, int &pTies, bool &playing2); //player move
 
@@ -84,7 +84,7 @@ void clearBoard(char board[3][3]) {
   
 }
 
-void updateBoard(char board[3][3], int a, int b, int &turn) {
+void updateBoard(char board[3][3], int a, int b, int &turn, bool repeat) {
   char place;
 
   if (turn == 1) {
@@ -103,12 +103,17 @@ void updateBoard(char board[3][3], int a, int b, int &turn) {
 void playerTurn(char board[3][3],int &turn, int &p1wins, int &p2wins, int &pTies, bool &playing2) {
 
   char loc[3];
+  bool repeat = false;
   
   if (turn == 1) {
     printBoard(board);
       cout << "Player 1 (x), tell me where you want to place your tac? (ex. 2a, 1b, 3c)" << endl;
-      cin.get(loc, 3);
-      updateBoard(board, (int)loc[0] -49, (int)loc[1] - 97, turn);
+      cin >> loc;
+      updateBoard(board, (int)loc[0] -49, (int)loc[1] - 97, turn, repeat);
+      if (repeat) {
+	new playerTurn(board[3][3], turn, p1wins, p2wins, pTries, playing2);
+      }
+
       printBoard(board);
 
       if (checkWin(board, 1) == 1) {
@@ -123,11 +128,14 @@ void playerTurn(char board[3][3],int &turn, int &p1wins, int &p2wins, int &pTies
       }
   }
   
-   if (turn == 1) {
+   if (turn == -1) {
     printBoard(board);
       cout << "Player 2 (x), tell me where you want to place your tac? (ex. 2a, 1b, 3c)" << endl;
-      cin.get(loc, 3);
-      updateBoard(board, (int)loc[0] - 49, (int)loc[1] - 97, turn);
+      cin >> loc;
+      updateBoard(board, (int)loc[0] -49, (int)loc[1] - 97, turn, repeat);
+      if (repeat) {
+	new playerTurn(board[3][3], turn, p1wins, p2wins, pTries, playing2);
+      }
       printBoard(board);
 
       if (checkWin(board, -1) == 1) {
@@ -142,7 +150,6 @@ void playerTurn(char board[3][3],int &turn, int &p1wins, int &p2wins, int &pTies
       }
   }
   turn *= -1;
-  playing2 = true;
   return;
 }
 
