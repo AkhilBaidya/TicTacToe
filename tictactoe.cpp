@@ -1,21 +1,27 @@
+
+//used https://www.cs.cmu.edu/~pattis/15-1XX/common/handouts/ascii.html to reference ASCII values
+/*used suggestion from my father to use integers instead of characters throughout my code: however, this turned out
+to not be the source of error. but the use of "=" instead of "==" in the checkfull function. Additionally, code seemed
+to work better after replacing cin.get() with the regular cin >> */
+
 #include <iostream>
 
 using namespace std;
 
-void printBoard(char board[3][3]); //change the board
-void clearBoard(char board[3][3]);
-void updateBoard(char board[3][3], int a, int b, int &turn, bool repeat);
+void printBoard(int board[3][3]); //change the board
+void clearBoard(int board[3][3]);
+void updateBoard(int board[3][3], int a, int b, int &turn);
 
-void playerTurn(char board[3][3], int &turn, int &p1wins, int &p2wins, int &pTies, bool &playing2); //player move
+void playerTurn(int board[3][3], int &turn, int &p1wins, int &p2wins, int &pTies,bool &playing2); //player move
 
-int checkWin(char board[3][3], int turn); //check end conditions
-bool checkFull(char board[3][3]);
-bool checkLegal(char board[3][3], int a, int b);
+int checkWin(int board[3][3], int turn); //check end conditions
+bool checkFull(int board[3][3]);
+bool checkLegal(int board[3][3], int a, int b);
 
 int main(){
 
   //VARIABLES:
-  char theBoard[3][3]; //the board
+  int theBoard[3][3]; //the board
 
   int turn = 1; //turn #, wins
   int p1wins = 0;
@@ -28,6 +34,7 @@ int main(){
   
   clearBoard(theBoard);
   cout << "Let's play a game of TicTacToe!" << endl;
+  printBoard(theBoard);
 
   while (playing) {
 
@@ -57,7 +64,7 @@ int main(){
 }
 
 
-void printBoard(char board[3][3]) {
+void printBoard(int board[3][3]) {
 
   cout << "\ta\tb\tc" << endl;
 
@@ -66,32 +73,48 @@ void printBoard(char board[3][3]) {
     cout << i+1;
     
     for (int j = 0; j < 3; j++) {
-      cout << "\t" << board[i][j];
+
+      if (board[i][j] == 1) {
+      cout << "\t" << 'X';
+      }
+      else if (board[i][j] == 0){
+	cout << "\t" << 'O';
+      }
+      else {
+	cout << "\t" << '-';
+      }
+      
+      
    }
     
     cout << "\t" << endl;
   }
-  
+
+  return;
 }
 
-void clearBoard(char board[3][3]) {
+void clearBoard(int board[3][3]) {
 
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
-      board[i][j] = '-';
+      board[i][j] = -1;
     }
   }
+
+  return;
   
 }
 
-void updateBoard(char board[3][3], int a, int b, int &turn, bool repeat) {
-  char place;
+void updateBoard(int board[3][3], int a, int b, int &turn) {
+  int place;
 
+  cout << "a = " << a << "  b =" << b << endl;
+  
   if (turn == 1) {
-    place = 'x';
+    place = 1;
   }
   else if (turn == -1) {
-    place = 'o';
+    place = 0;
   }  
 
   if (checkLegal(board, a, b)) {
@@ -100,75 +123,64 @@ void updateBoard(char board[3][3], int a, int b, int &turn, bool repeat) {
   return;
 }
 
-void playerTurn(char board[3][3],int &turn, int &p1wins, int &p2wins, int &pTies, bool &playing2) {
+void playerTurn(int board[3][3],int &turn, int &p1wins, int &p2wins, int &pTies, bool &playing2) {
 
   char loc[3];
-  bool repeat = false;
   
   if (turn == 1) {
+    cout << "Player 1 (x), tell me where you want to place your tac? (ex. 2a, 1b, 3c)" << endl;
+  }
+  else {
+    cout << "Player 2 (x), tell me where you want to place your tac? (ex. 2a, 1b, 3c)" << endl;
+   }
+  
+    cin >> loc;
     printBoard(board);
-      cout << "Player 1 (x), tell me where you want to place your tac? (ex. 2a, 1b, 3c)" << endl;
-      cin >> loc;
-      updateBoard(board, (int)loc[0] -49, (int)loc[1] - 97, turn, repeat);
-      if (repeat) {
-	new playerTurn(board[3][3], turn, p1wins, p2wins, pTries, playing2);
-      }
-
-      printBoard(board);
-
-      if (checkWin(board, 1) == 1) {
+    updateBoard(board, ((int) loc[0]) -49, ((int)loc[1]) - 97, turn);
+    printBoard(board);
+   
+    if (checkWin(board, 1) == 1) {
 	cout << "player 1 wins!" << endl;
 	p1wins += 1;
         playing2 = false;
       }
-      else if (checkWin(board, 1) == 3) {
+    else if (checkWin(board, 1) == 3) {
 	  cout << "it's a tie!" << endl;
 	  pTies += 1;
 	  playing2 = false;
-      }
-  }
-  
-   if (turn == -1) {
-    printBoard(board);
-      cout << "Player 2 (x), tell me where you want to place your tac? (ex. 2a, 1b, 3c)" << endl;
-      cin >> loc;
-      updateBoard(board, (int)loc[0] -49, (int)loc[1] - 97, turn, repeat);
-      if (repeat) {
-	new playerTurn(board[3][3], turn, p1wins, p2wins, pTries, playing2);
-      }
-      printBoard(board);
-
-      if (checkWin(board, -1) == 1) {
-	cout << "player 1 wins!" << endl;
+      }  
+   
+    else if (checkWin(board, -1) == 1) {
+	cout << "player 2 wins!" << endl;
 	p2wins += 1;
         playing2 = false;
       }
-      else if (checkWin(board, -1) == 3) {
+    else if (checkWin(board, -1) == 3) {
 	  cout << "it's a tie!" << endl;
 	  pTies += 1;
 	  playing2 = false;
       }
-  }
+    
   turn *= -1;
   return;
 }
 
-int checkWin(char board[3][3], int turn) {
+int checkWin(int board[3][3], int turn) {
 
-  char lookfor;
+  int lookfor;
 
   if (turn == 1) {
-    lookfor = 'x';
+    lookfor = 1;
   }
   else if (turn == -1) {
-    lookfor = 'o';
+    lookfor = 0;
   }
   
   //three horizontal:
-  for (int i = 0; i < 3; i++) {
+ for (int i = 0; i < 3; i++) {
     if (board[i][0] == lookfor && board[i][1] == lookfor && board[i][2] == lookfor) {
       return 1;
-  }
+    }
   }
     //three vertical:
   for (int i = 0; i < 3; i++) {
@@ -176,28 +188,27 @@ int checkWin(char board[3][3], int turn) {
       return 1;
   }
   }
-
    //two diagonals:
   if (board[0][0] == lookfor && board[1][1] == lookfor && board[2][2] == lookfor) {
       return 1;
   }
 
   else if (board[0][2] == lookfor && board[1][1] == lookfor && board[2][0] == lookfor) {
-      return turn;
+      return 1;
   }
-
+ 
   else if (checkFull(board)) {
     return 2;
-  }
+    }
 
   return 0;
 }
 
-bool checkFull(char board[3][3]) {
+bool checkFull(int board[3][3]) {
 
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
-      if (board[i][j] = '-') {
+      if (board[i][j] == -1) {
 	return false;
       }
     }
@@ -206,12 +217,11 @@ bool checkFull(char board[3][3]) {
   return true;
 }
 
-bool checkLegal(char board[3][3], int a, int b) {
+bool checkLegal(int board[3][3], int a, int b) {
   
-  if ((char)board[a][b] == 'o' || (char)board[a][b] == 'x') {
+  if (board[a][b] == 0 || board[a][b] == 1) {
     return false;
   }
 
   return true;
 }
-
