@@ -2,7 +2,7 @@
 //used https://www.cs.cmu.edu/~pattis/15-1XX/common/handouts/ascii.html to reference ASCII values
 /*used suggestion from my father to use integers instead of characters throughout my code: however, this turned out
 to not be the source of error. but the use of "=" instead of "==" in the checkfull function. Additionally, code seemed
-to work better after replacing cin.get() with the regular cin >> */
+to work better after replacing cin.get() with the regular cin >>*/
 
 #include <iostream>
 
@@ -10,7 +10,7 @@ using namespace std;
 
 void printBoard(int board[3][3]); //change the board
 void clearBoard(int board[3][3]);
-void updateBoard(int board[3][3], int a, int b, int &turn);
+bool updateBoard(int board[3][3], int a, int b, int &turn);
 
 void playerTurn(int board[3][3], int &turn, int &p1wins, int &p2wins, int &pTies,bool &playing2); //player move
 
@@ -37,7 +37,7 @@ int main(){
   printBoard(theBoard);
 
   while (playing) {
-
+    clearBoard(theBoard);
     playing2 = true;
     
     while (playing2) {
@@ -105,7 +105,7 @@ void clearBoard(int board[3][3]) {
   
 }
 
-void updateBoard(int board[3][3], int a, int b, int &turn) {
+bool updateBoard(int board[3][3], int a, int b, int &turn) {
   int place;
 
   cout << "a = " << a << "  b =" << b << endl;
@@ -118,15 +118,20 @@ void updateBoard(int board[3][3], int a, int b, int &turn) {
   }  
 
   if (checkLegal(board, a, b)) {
-    board[a][b] = place; 
+    board[a][b] = place;
+    return false;
   }
-  return;
+
+  cout << "You can't pick that spot!" << endl;
+  return true;
 }
 
 void playerTurn(int board[3][3],int &turn, int &p1wins, int &p2wins, int &pTies, bool &playing2) {
 
   char loc[3];
-  
+  bool ask = true;
+
+  while (ask) {
   if (turn == 1) {
     cout << "Player 1 (x), tell me where you want to place your tac? (ex. 2a, 1b, 3c)" << endl;
   }
@@ -135,10 +140,10 @@ void playerTurn(int board[3][3],int &turn, int &p1wins, int &p2wins, int &pTies,
    }
   
     cin >> loc;
+    ask = updateBoard(board, ((int) loc[0]) -49, ((int)loc[1]) - 97, turn);
     printBoard(board);
-    updateBoard(board, ((int) loc[0]) -49, ((int)loc[1]) - 97, turn);
-    printBoard(board);
-   
+  }
+ 
     if (checkWin(board, 1) == 1) {
 	cout << "player 1 wins!" << endl;
 	p1wins += 1;
