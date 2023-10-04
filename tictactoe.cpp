@@ -290,5 +290,9 @@ bool checkLegal(int board[3][3], int a, int b) {
     return false; //there is a piece (0 and 1 represent the player piece values, player 2 and player 1 respectively) already at (a,b), so the move is illegal
   }
 
+  if (a > 2 || b > 2) { //rows (a) and columns (b) are from 0 to 2
+    return false; //desired location is out of bounds and illegal
+  }
+
   return true; //the spot (a,b) is open, so the move is legal!
 }
