@@ -3,14 +3,29 @@
 
 //Date of Submission: 10/3/2023
 
-//Notes: 
+/*Notes: The following code is for a two-player (no computer player) game of Tic-Tac-Toe. Player 1 is X and player 2 is O.
+Players will have to input in specific coordinates based on the column and row labels of the Tic-Tac-Toe board (such as 1a, 2b, 3c,
+without spaces and no capitals) on their turn to place a piece on the 3x3 board. Turns alternate, with player 1 starting.
 
-//Credits: 
+First to 3 in a row/column/diagonal wins!
 
-//used https://www.cs.cmu.edu/~pattis/15-1XX/common/handouts/ascii.html to reference ASCII values
-/*used suggestion from my father to use integers instead of characters throughout my code: however, this turned out
-to not be the source of error. but the use of "=" instead of "==" in the checkfull function. Additionally, code seemed
-to work better after replacing cin.get() with the regular cin >>*/
+To continue the game, once prompted, please enter 'y' or 'n' (yes or no).*/
+
+/*Credits: 
+
+1. Mr. Galbraith's videos on Canvas were used to understand how to create functions in C++ (such as writing the function
+prototype at the top of the code). 
+
+2. Used Carnegie Mellon's ASCII chart when inputting indices into updateBoard() in playerTurn() to see
+ASCII values of alphanumeric characters. Link to the chart: 
+https://www.cs.cmu.edu/~pattis/15-1XX/common/handouts/ascii.html to reference ASCII values
+
+3. Used suggestion from my father to use integers instead of characters throughout my code. This final code was altered with that
+suggestion (however, this turned out to not impact the performance of the code); the actual conversion from using characters to
+integers was done by myself. 
+
+4. Earlier versions of the code did not function correctly due to the use of "=" instead of "==" in the checkfull function.
+This typo was spotted by my father when I was debugging my code */
 
 #include <iostream>
 
@@ -161,94 +176,119 @@ void playerTurn(int board[3][3],int &turn, int &p1wins, int &p2wins, int &pTies,
     }
     cin >> loc; //place that inputted index into the loc character array
 
-    //used ASCII 
+     /*used ASCII chart from Carnegie Mellon School of Computer Science at:
+      https://www.cs.cmu.edu/~pattis/15-1XX/common/handouts/ascii.html
+
+      This helped determine what number to subtract from the index inputs (put into updateBoard) when converted to integers in order to get the correct
+      index for the array (ex. (1, a) needs to become (0,0)) */
+    
     ask = updateBoard(board, ((int) loc[0]) -49, ((int)loc[1]) - 97, turn);
+    /*updateBoard places the current player's piece at the desired location
+   (and returns whether the player has entered an illegal move and the program needs to ask them for a move again, with ask = true)*/
     printBoard(board);
   }
- 
-    if (checkWin(board, 1) == 1) {
+
+  //check for wins or ties: 
+  if (checkWin(board, 1) == 1) { //player one wins
 	cout << "player 1 wins!" << endl;
 	p1wins += 1;
-        round = false;
+        round = false; //end the round
       }
-    else if (checkWin(board, 1) == 2) {
+
+  else if (checkWin(board, 1) == 2) { //a tie on player one's turn
 	  cout << "it's a tie!" << endl;
 	  pTies += 1;
 	  round = false;
       }  
    
-    else if (checkWin(board, -1) == 1) {
+  else if (checkWin(board, -1) == 1) {//player two wins
 	cout << "player 2 wins!" << endl;
 	p2wins += 1;
         round = false;
       }
-    else if (checkWin(board, -1) == 2) {
+  else if (checkWin(board, -1) == 2) {//a tie on player two's turn
 	  cout << "it's a tie!" << endl;
 	  pTies += 1;
 	  round = false;
       }
     
-  turn *= -1;
+  turn *= -1; //switch turns
   return;
 }
 
+//The checkWin function takes the board and the current turn and returns whether there is win for the player of that turn or a tie:
 int checkWin(int board[3][3], int turn) {
 
-  int lookfor;
+  int lookfor; //which type of piece to look for (the player of the current turn)
 
-  if (turn == 1) {
+  if (turn == 1) { //player 1
     lookfor = 1;
   }
-  else if (turn == -1) {
+  else if (turn == -1) {//player 2
     lookfor = 0;
   }
   
-  //three horizontal:
+ //check for three horizontal pieces (win):
  for (int i = 0; i < 3; i++) {
     if (board[i][0] == lookfor && board[i][1] == lookfor && board[i][2] == lookfor) {
-      return 1;
+      return 1; //returning 1 represents a win occurred 
     }
   }
-    //three vertical:
+
+ //check for three vertical pieces (win):
   for (int i = 0; i < 3; i++) {
     if (board[0][i] == lookfor && board[1][i] == lookfor && board[2][i] == lookfor) {
       return 1;
+    }
   }
-  }
-   //two diagonals:
+  
+   //check for diagonal from top left to bottom right (win):
   if (board[0][0] == lookfor && board[1][1] == lookfor && board[2][2] == lookfor) {
       return 1;
   }
 
+  //check for diagonal from bottom left to top right (win):
   else if (board[0][2] == lookfor && board[1][1] == lookfor && board[2][0] == lookfor) {
       return 1;
   }
 
+  //if the board is full but none of these win cases occur, a tie occurred:
   if (checkFull(board)) {
-    return 2;
+    return 2; //returning 2 signifies a tie occured
   }
 
-  return 0;
+  return 0; //else return 0, meaning nothing happened
 }
 
+
+/*The checkFull function takes in the board and checks if there still exists a value of -1 (representin an empty spot) in the board array.
+  If so, then the board not full. If not, then the board is full. The function returns this observation as a boolean.*/
 bool checkFull(int board[3][3]) {
 
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
-      if (board[i][j] == -1) {
-	return false;
+      if (board[i][j] == -1) { //as soon as there is a -1 (empty) value in the board...
+
+	/*Note: earlier drafts had board[i][j] = -1, messing with the performance of the game (deleting values at the spot 1a)
+	  The typo from '==' to '=' was spotted by my father while I was debugging my code. 
+	 */
+	
+	return false; //it is false that the board is full 
       }
     }
   }
 
-  return true;
+  return true; //else the board is full
 }
 
+/*The checkLegal function takes in the board and some index (a,b) where the player want to place a piece.
+  The function returns whether the location is empty or already occupied (if is empty, the move is legal).
+ */
 bool checkLegal(int board[3][3], int a, int b) {
   
   if (board[a][b] == 0 || board[a][b] == 1) {
-    return false;
+    return false; //there is a piece (0 and 1 represent the player piece values, player 2 and player 1 respectively) already at (a,b), so the move is illegal
   }
 
-  return true;
+  return true; //the spot (a,b) is open, so the move is legal!
 }
