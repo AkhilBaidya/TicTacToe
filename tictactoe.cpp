@@ -66,6 +66,8 @@ int main(){
   
   while (game) {
 
+    turn = 1; //start with player 1
+    
     clearBoard(theBoard); //at the beginning of the game, clear and display board and the round beings (round = true)
     printBoard(theBoard);
     round = true;
